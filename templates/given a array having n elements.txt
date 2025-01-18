@@ -1,0 +1,1 @@
+given a array having n elements

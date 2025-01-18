@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food and Nutrition Apps</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Food and Nutrition Apps</h1>
+    </header>
+    <p>Upload a food packet's QR code image to find the sugar content using its GTIN number.</p>
+
+    <main class="main-container">
+        
+        <section class="description-section">
+            <h2>About the Project</h2>
+            <p>
+                This project empowers users to make healthier food choices. By analyzing the GTIN (Global Trade Item
+                Number) embedded in a QR code image, we provide accurate sugar content information for food products.
+            </p>
+            <p>
+                Simply upload a QR code image, and the system will decode it to retrieve nutritional details. It's
+                quick, easy, and promotes informed decision-making.
+            </p>
+        </section>
+        
+        <section class="upload-section">
+            <h2>Upload QR Code</h2>
+            <form id="qr-form" class="upload-form" action="/" method="POST" enctype="multipart/form-data">
+                <label for="qr-input" class="upload-label">Select a QR Code Image : </label>
+                <div class="upload-box">
+                    <input type="file" id="qr-input" name="img_file" accept=".jpg, .jpeg, .png" required>
+                    <span id="file-name">No file selected</span>
+                </div>
+                <input class="button" type="submit" value="Submit">
+            </form>
+        </section>
+
+        <section class="result-section">
+            <h2>Sugar Content Result</h2>
+            <div id="result" class="result-display">
+                {% if a %}
+                <p>{{ a }}<br>{{ b }}</p>
+                {% else %}
+                <p>No data available yet. Upload a QR code image to see the result.</p>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <script src="../static/script.js"></script>
+</body>
+
+</html>
