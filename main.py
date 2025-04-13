@@ -63,10 +63,50 @@ def upload_img():
         else:
             print(f"Error fetching product information. Status code: {response.status_code}")
             return None
+    def calculate_health_score(product_data):
+        # Base Score
+        score = 100
+        
+        # Deductions
+        # 1. Nutri-Score Penalty
+        nutri_score_penalty = {"a":0, "b":10, "c":20, "d":30, "e":40}
+        score -= nutri_score_penalty.get(product_data["nutriscore_grade"].lower(), 40)
+        
+        # 2. Nova Group Penalty
+        score -= product_data["nova_group"] * 10  # 40 points for group 4
+        
+        # 3. Sugar Content
+        if product_data["nutriments"]["sugars_value"] > 5:
+            score -= (product_data["nutriments"]["sugars_value"] -5) * 2
+        
+        # 4. Additives
+        score -= len(product_data["additives_tags"]) * 5
+        
+        # 5. Caffeine Content
+        if product_data["nutriments"].get("caffeine_value",0) > 50:
+            score -= 15
+            
+        # Bonuses
+        if "en:organic" in product_data["labels_tags"]:
+            score += 20
+            
+        return max(0, min(100, score))
+    def classifier(score):
+        if score > 80:
+            return "Safe for regular consumption"
+        elif score > 60:
+            return "Moderate intake recommended"
+        elif score > 40:
+            return "Limit consumption"
+        else:
+            return "Not recommended for daily use"
     
     if qr_data:
         product_info = get_product_info(qr_data)
         if product_info:
+            # Extract relevant information from the product data
+            classify=calculate_health_score(product_info)
+            c=classifier(classify)
             ingredients = product_info.get('ingredients', 'N/A')
             sugar_content = product_info.get('nutriments', {}).get('sugars_100g', 'N/A')
             a = f"Estimated Sugar: {ingredients[1]['percent_estimate']}%"
@@ -78,8 +118,9 @@ def upload_img():
     else:
         a = "No QR code found."
         b = ""
+        c=""
     
-    return render_template('INDEX2.HTML', a=a, b=b)
+    return render_template('INDEX2.HTML', a=a, b=b,c=c)
 
 
 if __name__ == '__main__':
