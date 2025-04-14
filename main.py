@@ -100,6 +100,7 @@ def upload_img():
             return "Limit consumption"
         else:
             return "Not recommended for daily use"
+
     
     if qr_data:
         product_info = get_product_info(qr_data)
@@ -107,6 +108,9 @@ def upload_img():
             # Extract relevant information from the product data
             classify=calculate_health_score(product_info)
             c=classifier(classify)
+            # nut=extract_nutrition(product_info)
+            # print("Product Information:")
+            # print(nut)
             ingredients = product_info.get('ingredients', 'N/A')
             sugar_content = product_info.get('nutriments', {}).get('sugars_100g', 'N/A')
             a = f"Estimated Sugar: {ingredients[1]['percent_estimate']}%"
