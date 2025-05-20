@@ -36,4 +36,20 @@ API Used
 - Tracking History: Allow users to view their scans
 - AI Agent
 
+#### for prajawal
+##### home page 
+ 1. what this website can do
+ 2. its usses
+ 3. how to do
+ 4. `search bar for searching food by name`
+ 5. `scan to scan img` (img input)
+##### visualize result 
+ result will contain -:
+ - serving size
+ - shugar content
+##### history of users previous searches
+ - product name
+ - result 
+ - date
+
 
