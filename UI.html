@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodScan - Check Your Food Ingredients</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#FF4646", secondary: "#2D2D2D" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      body {
+          font-family: 'Inter', sans-serif;
+          background-color: #121212;
+          color: #E0E0E0;
+      }
+      .glass-effect {
+          background: rgba(30, 30, 30, 0.6);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .search-bar {
+          background: rgba(30, 30, 30, 0.6);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          transition: all 0.3s ease;
+      }
+      .search-bar:focus-within {
+          border-color: #FF4646;
+          box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
+      }
+      .feature-card {
+          transition: all 0.3s ease;
+      }
+      .feature-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+      .nav-link {
+          position: relative;
+      }
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: -2px;
+          left: 0;
+          background-color: #FF4646;
+          transition: width 0.3s ease;
+      }
+      .nav-link:hover::after, .nav-link.active::after {
+          width: 100%;
+      }
+      .history-card {
+          transition: all 0.3s ease;
+      }
+      .history-card:hover {
+          transform: scale(1.02);
+      }
+      input[type="file"] {
+          display: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #FF4646;
+          cursor: pointer;
+      }
+      .tab-content {
+          display: none;
+      }
+      .tab-content.active {
+          display: block;
+      }
+      .pulse {
+          animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+          0% {
+              transform: scale(0.95);
+              box-shadow: 0 0 0 0 rgba(255, 70, 70, 0.7);
+          }
+          70% {
+              transform: scale(1);
+              box-shadow: 0 0 0 10px rgba(255, 70, 70, 0);
+          }
+          100% {
+              transform: scale(0.95);
+              box-shadow: 0 0 0 0 rgba(255, 70, 70, 0);
+          }
+      }
+      .sugar-meter {
+          height: 10px;
+          border-radius: 5px;
+          background: rgba(255, 255, 255, 0.1);
+          overflow: hidden;
+          position: relative;
+      }
+      .sugar-level {
+          height: 100%;
+          background: linear-gradient(to right, #4CAF50, #FFC107, #FF4646);
+          border-radius: 5px;
+          transition: width 1s ease-in-out;
+      }
+      .circular-progress {
+          position: relative;
+          width: 80px;
+          height: 80px;
+      }
+      .circular-progress svg {
+          transform: rotate(-90deg);
+      }
+      .circular-progress circle {
+          fill: none;
+          stroke-width: 8;
+          stroke-linecap: round;
+      }
+      .circular-progress .bg {
+          stroke: rgba(255, 255, 255, 0.1);
+      }
+      .circular-progress .progress {
+          stroke: #FF4646;
+          transition: stroke-dashoffset 1s ease;
+      }
+      .circular-progress .text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 18px;
+          font-weight: 600;
+      }
+      .toast {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          padding: 12px 20px;
+          background: rgba(30, 30, 30, 0.9);
+          border-left: 4px solid #FF4646;
+          border-radius: 4px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 1000;
+          transform: translateX(120%);
+          transition: transform 0.3s ease;
+      }
+      .toast.show {
+          transform: translateX(0);
+      }
+      .custom-switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+      }
+      .custom-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+      }
+      .switch-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(255, 255, 255, 0.1);
+          transition: .4s;
+          border-radius: 34px;
+      }
+      .switch-slider:before {
+          position: absolute;
+          content: "";
+          height: 18px;
+          width: 18px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+      }
+      input:checked + .switch-slider {
+          background-color: #FF4646;
+      }
+      input:checked + .switch-slider:before {
+          transform: translateX(26px);
+      }
+      .custom-radio {
+          display: inline-block;
+          position: relative;
+          padding-left: 28px;
+          cursor: pointer;
+          user-select: none;
+      }
+      .custom-radio input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+      }
+      .radio-checkmark {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 20px;
+          width: 20px;
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+      }
+      .custom-radio:hover input ~ .radio-checkmark {
+          background-color: rgba(255, 255, 255, 0.2);
+      }
+      .custom-radio input:checked ~ .radio-checkmark {
+          background-color: #FF4646;
+      }
+      .radio-checkmark:after {
+          content: "";
+          position: absolute;
+          display: none;
+      }
+      .custom-radio input:checked ~ .radio-checkmark:after {
+          display: block;
+      }
+      .custom-radio .radio-checkmark:after {
+          top: 6px;
+          left: 6px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <a href="#" class="text-2xl font-['Pacifico'] text-white">FoodScan</a>
+        <nav class="hidden md:flex space-x-8">
+          <a
+            href="#home"
+            class="nav-link text-white hover:text-primary transition-colors"
+            >Home</a
+          >
+          <a
+            href="#results"
+            class="nav-link text-white hover:text-primary transition-colors"
+            >Results</a
+          >
+          <a
+            href="#history"
+            class="nav-link text-white hover:text-primary transition-colors"
+            >History</a
+          >
+        </nav>
+        <div class="flex items-center space-x-4">
+          <button
+            class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 !rounded-button whitespace-nowrap transition-colors"
+          >
+            <i class="ri-user-line mr-2"></i>Sign In
+          </button>
+          <button
+            class="md:hidden text-white w-10 h-10 flex items-center justify-center"
+            id="mobile-menu-button"
+          >
+            <i class="ri-menu-line ri-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="md:hidden hidden bg-secondary" id="mobile-menu">
+        <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+          <a
+            href="#home"
+            class="text-white hover:text-primary py-2 transition-colors"
+            >Home</a
+          >
+          <a
+            href="#results"
+            class="text-white hover:text-primary py-2 transition-colors"
+            >Results</a
+          >
+          <a
+            href="#history"
+            class="text-white hover:text-primary py-2 transition-colors"
+            >History</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Home Section -->
+      <section id="home" class="tab-content active min-h-screen">
+        <div class="relative overflow-hidden pt-16 pb-24">
+          <div
+            style="background-image: url('https://readdy.ai/api/search-image?query=abstract%20dark%20background%20with%20red%20accents%2C%20modern%20digital%20interface%2C%20futuristic%20technology%20theme%2C%20minimal%20design%20with%20subtle%20patterns%2C%20suitable%20for%20a%20food%20scanning%20app%20background&width=1920&height=1080&seq=1&orientation=landscape');"
+            class="absolute inset-0 bg-cover bg-center opacity-30"
+          ></div>
+
+          <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center mb-16">
+              <h1
+                class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+              >
+                Know What's In Your Food
+              </h1>
+              <p class="text-xl text-gray-300 mb-8">
+                Scan any barcode to instantly check if a food product is
+                suitable for your dietary needs.
+              </p>
+              <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button
+                  class="bg-primary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors pulse"
+                >
+                  <i class="ri-barcode-line mr-2"></i>Scan Now
+                </button>
+                <button
+                  class="bg-secondary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors"
+                >
+                  <i class="ri-information-line mr-2"></i>Learn More
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              <div class="feature-card glass-effect p-6 rounded-lg">
+                <div
+                  class="w-14 h-14 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4"
+                >
+                  <i class="ri-scan-2-line ri-xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-3">
+                  What It Does
+                </h3>
+                <p class="text-gray-300">
+                  FoodScan analyzes food products through barcode scanning to
+                  provide detailed nutritional information, focusing on sugar
+                  content and dietary suitability.
+                </p>
+              </div>
+              <div class="feature-card glass-effect p-6 rounded-lg">
+                <div
+                  class="w-14 h-14 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4"
+                >
+                  <i class="ri-heart-pulse-line ri-xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-3">Its Uses</h3>
+                <p class="text-gray-300">
+                  Perfect for diabetics, those with allergies, or anyone
+                  following specific diets. Make informed choices about what you
+                  eat with instant analysis.
+                </p>
+              </div>
+              <div class="feature-card glass-effect p-6 rounded-lg">
+                <div
+                  class="w-14 h-14 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4"
+                >
+                  <i class="ri-guide-line ri-xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-3">
+                  How To Use
+                </h3>
+                <p class="text-gray-300">
+                  Simply scan a product barcode with your camera or upload a
+                  barcode image. Alternatively, search for products by name to
+                  get instant results.
+                </p>
+              </div>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+              <div class="search-bar flex items-center p-2 rounded-lg mb-6">
+                <i class="ri-search-line ri-lg text-gray-400 mx-3"></i>
+                <input
+                  type="text"
+                  placeholder="Search food by name..."
+                  class="bg-transparent border-none outline-none text-white w-full py-2 text-sm"
+                />
+              </div>
+
+              <div class="text-center text-gray-400 my-4">OR</div>
+
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button
+                  class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center"
+                >
+                  <i class="ri-camera-line mr-2"></i>Scan Barcode
+                </button>
+                <label
+                  class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer"
+                >
+                  <i class="ri-image-line mr-2"></i>Upload Barcode Image
+                  <input type="file" accept="image/*" id="barcode-upload" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container mx-auto px-4 py-16">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">How It Works</h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+              Our advanced technology makes checking food ingredients simple and
+              fast
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="ri-barcode-line ri-xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Scan</h3>
+              <p class="text-gray-400">
+                Scan product barcode with your camera or upload an image
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="ri-search-line ri-xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Analyze</h3>
+              <p class="text-gray-400">
+                Our system searches our database and analyzes the ingredients
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="ri-file-list-3-line ri-xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">Results</h3>
+              <p class="text-gray-400">
+                Get detailed nutritional information and suitability assessment
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="ri-history-line ri-xl text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">History</h3>
+              <p class="text-gray-400">
+                Access your previous scans anytime for quick reference
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-secondary py-16">
+          <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto text-center mb-12">
+              <h2 class="text-3xl font-bold text-white mb-4">
+                Personalize Your Experience
+              </h2>
+              <p class="text-xl text-gray-300">
+                Set your dietary preferences to get more accurate
+                recommendations
+              </p>
+            </div>
+            <div class="glass-effect p-8 rounded-lg max-w-2xl mx-auto">
+              <div class="mb-6">
+                <h3 class="text-xl font-semibold text-white mb-4">
+                  Dietary Restrictions
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Gluten Free</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Dairy Free</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Vegan</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Vegetarian</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Nut Free</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="checkbox" name="diet" />
+                    <span class="radio-checkmark"></span>
+                    <span class="ml-2">Low Sugar</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="mb-6">
+                <h3 class="text-xl font-semibold text-white mb-4">
+                  Sugar Threshold
+                </h3>
+                <div class="flex items-center">
+                  <span class="text-sm text-gray-400 mr-3">Low</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="25"
+                    class="w-full h-2 bg-gray-700 rounded-full appearance-none"
+                  />
+                  <span class="text-sm text-gray-400 ml-3">High</span>
+                </div>
+                <div class="text-center mt-2 text-sm text-gray-400">
+                  Set your maximum acceptable sugar content per serving
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h3 class="text-xl font-semibold text-white">Save History</h3>
+                  <p class="text-sm text-gray-400">
+                    Keep record of your previous scans
+                  </p>
+                </div>
+                <label class="custom-switch">
+                  <input type="checkbox" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <button
+                class="w-full bg-primary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="results" class="tab-content min-h-screen py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">Scan Results</h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+              Detailed analysis of your scanned product
+            </p>
+          </div>
+          <div class="glass-effect p-8 rounded-lg max-w-3xl mx-auto">
+            <div class="flex flex-col md:flex-row gap-6 mb-8">
+              <div class="md:w-1/3 flex justify-center">
+                <img
+                  src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20chip%20cookies%20in%20packaging%2C%20product%20photography%20on%20dark%20background%2C%20high%20quality%20food%20photography&width=300&height=300&seq=2&orientation=squarish"
+                  alt="Chocolate Chip Cookies"
+                  class="rounded-lg object-cover h-48 w-full"
+                />
+              </div>
+              <div class="md:w-2/3">
+                <h3 class="text-2xl font-bold text-white mb-2">
+                  Chocolate Chip Cookies
+                </h3>
+                <p class="text-gray-400 mb-4">Brand: Delicious Treats</p>
+                <div class="flex items-center mb-4">
+                  <div
+                    class="w-8 h-8 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center mr-3"
+                  >
+                    <i class="ri-check-line ri-lg text-green-500"></i>
+                  </div>
+                  <span class="text-lg text-green-500 font-medium"
+                    >Suitable for your diet</span
+                  >
+                </div>
+                <p class="text-gray-300">
+                  This product meets your dietary preferences and falls within
+                  your sugar threshold limits.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <h4 class="text-lg font-semibold text-white mb-3">
+                  Serving Size
+                </h4>
+                <div class="flex items-center">
+                  <div class="circular-progress mr-4">
+                    <svg width="80" height="80">
+                      <circle class="bg" cx="40" cy="40" r="36" />
+                      <circle
+                        class="progress"
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke-dasharray="226.2"
+                        stroke-dashoffset="56.55"
+                      />
+                    </svg>
+                    <div class="text">30g</div>
+                  </div>
+                  <div>
+                    <p class="text-gray-300">2 cookies per serving</p>
+                    <p class="text-sm text-gray-400">
+                      Approximately 10 servings per package
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-lg font-semibold text-white mb-3">
+                  Sugar Content
+                </h4>
+                <div class="mb-2">
+                  <div class="flex justify-between mb-1">
+                    <span class="text-gray-300">12g per serving</span>
+                    <span class="text-gray-400">24% of daily value</span>
+                  </div>
+                  <div class="sugar-meter">
+                    <div class="sugar-level" style="width: 24%"></div>
+                  </div>
+                </div>
+                <p class="text-sm text-gray-400">
+                  Based on a 2,000 calorie diet with 50g daily sugar limit
+                </p>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <h4 class="text-lg font-semibold text-white mb-3">
+                Nutritional Information
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-effect p-3 rounded-lg text-center">
+                  <p class="text-gray-400 text-sm">Calories</p>
+                  <p class="text-white font-bold text-xl">150</p>
+                </div>
+                <div class="glass-effect p-3 rounded-lg text-center">
+                  <p class="text-gray-400 text-sm">Fat</p>
+                  <p class="text-white font-bold text-xl">7g</p>
+                </div>
+                <div class="glass-effect p-3 rounded-lg text-center">
+                  <p class="text-gray-400 text-sm">Carbs</p>
+                  <p class="text-white font-bold text-xl">22g</p>
+                </div>
+                <div class="glass-effect p-3 rounded-lg text-center">
+                  <p class="text-gray-400 text-sm">Protein</p>
+                  <p class="text-white font-bold text-xl">2g</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <h4 class="text-lg font-semibold text-white mb-3">Ingredients</h4>
+              <p class="text-gray-300">
+                Wheat flour, sugar, chocolate chips (sugar, chocolate liquor,
+                cocoa butter), vegetable oil (palm, soybean), water, corn syrup,
+                leavening agents, salt, natural flavor.
+              </p>
+            </div>
+
+            <div class="mb-8">
+              <h4 class="text-lg font-semibold text-white mb-3">
+                Recommendation
+              </h4>
+              <p class="text-gray-300">
+                This product contains a moderate amount of sugar. While it fits
+                within your preferences, consider consuming in moderation as
+                part of a balanced diet.
+              </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <button
+                class="flex-1 bg-primary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                <i class="ri-save-line mr-2"></i>Save to History
+              </button>
+              <button
+                class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                <i class="ri-share-line mr-2"></i>Share Results
+              </button>
+              <button
+                class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                <i class="ri-scan-line mr-2"></i>Scan Another
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-16">
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-white mb-2">
+                Sugar Content Comparison
+              </h3>
+              <p class="text-gray-300">
+                How this product compares to similar items
+              </p>
+            </div>
+            <div class="glass-effect p-6 rounded-lg">
+              <div id="comparison-chart" class="w-full h-80"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section id="history" class="tab-content min-h-screen py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">
+              Your Scan History
+            </h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+              Review your previously scanned products
+            </p>
+          </div>
+          <div class="glass-effect p-6 rounded-lg mb-8">
+            <div
+              class="flex flex-col md:flex-row justify-between items-center mb-6"
+            >
+              <div class="mb-4 md:mb-0">
+                <h3 class="text-xl font-semibold text-white">Recent Scans</h3>
+                <p class="text-sm text-gray-400">
+                  You have scanned 24 products in total
+                </p>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="search-bar flex items-center p-2 rounded-lg">
+                  <i class="ri-search-line text-gray-400 mx-2"></i>
+                  <input
+                    type="text"
+                    placeholder="Search history..."
+                    class="bg-transparent border-none outline-none text-white w-full py-1 text-sm"
+                  />
+                </div>
+                <select
+                  class="bg-secondary text-white px-4 py-2 rounded border border-gray-700 outline-none pr-8"
+                >
+                  <option>All Products</option>
+                  <option>Suitable Only</option>
+                  <option>Not Suitable</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20chip%20cookies%20in%20packaging%2C%20product%20photography%20on%20dark%20background%2C%20high%20quality%20food%20photography&width=80&height=80&seq=3&orientation=squarish"
+                    alt="Chocolate Chip Cookies"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">
+                      Chocolate Chip Cookies
+                    </h4>
+                    <p class="text-sm text-gray-400">Delicious Treats</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 21, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 12g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20cereal%20box%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=4&orientation=squarish"
+                    alt="Breakfast Cereal"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Breakfast Cereal</h4>
+                    <p class="text-sm text-gray-400">Morning Crunch</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 20, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 18g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20yogurt%20container%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=5&orientation=squarish"
+                    alt="Greek Yogurt"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Greek Yogurt</h4>
+                    <p class="text-sm text-gray-400">Creamy Delight</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 19, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 6g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20soda%20bottle%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20beverage%20packaging&width=80&height=80&seq=6&orientation=squarish"
+                    alt="Soda Drink"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Soda Drink</h4>
+                    <p class="text-sm text-gray-400">Fizzy Pop</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 18, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 39g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20granola%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=7&orientation=squarish"
+                    alt="Granola Bar"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Granola Bar</h4>
+                    <p class="text-sm text-gray-400">Nature's Best</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 17, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 8g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=8&orientation=squarish"
+                    alt="Chocolate Bar"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Chocolate Bar</h4>
+                    <p class="text-sm text-gray-400">Sweet Delights</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 16, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 24g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-center mt-8">
+              <button
+                class="bg-secondary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                Load More
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-effect p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-white mb-6">
+              Your Sugar Intake Trends
+            </h3>
+            <div id="trends-chart" class="w-full h-80"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-secondary py-12 mt-16">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <a
+              href="#"
+              class="text-2xl font-['Pacifico'] text-white mb-4 inline-block"
+              >FoodScan</a
+            >
+            <p class="text-gray-400 mb-4">
+              Making healthy eating choices easier with instant food analysis.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-facebook-fill ri-lg"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-twitter-fill ri-lg"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-instagram-fill ri-lg"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Pricing</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Support</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Terms of Service</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >FAQ</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Newsletter</h4>
+            <p class="text-gray-400 mb-4">
+              Subscribe to get updates on new features and releases.
+            </p>
+            <div class="flex">
+              <input
+                type="email"
+                placeholder="Your email"
+                class="bg-gray-800 text-white px-4 py-2 rounded-l-lg border-none outline-none flex-1"
+              />
+              <button
+                class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 rounded-r-lg whitespace-nowrap transition-colors"
+              >
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center"
+        >
+          <p class="text-gray-400 mb-4 md:mb-0">
+            © 2025 FoodScan. All rights reserved.
+          </p>
+          <div class="flex space-x-6">
+            <i class="ri-visa-fill ri-xl text-gray-400"></i>
+            <i class="ri-mastercard-fill ri-xl text-gray-400"></i>
+            <i class="ri-paypal-fill ri-xl text-gray-400"></i>
+            <i class="ri-apple-fill ri-xl text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast">
+      <div class="flex items-center">
+        <i class="ri-check-line ri-lg text-primary mr-3"></i>
+        <span id="toast-message">Action completed successfully!</span>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        mobileMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Tab navigation
+        const tabLinks = document.querySelectorAll('a[href^="#"]');
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute("href").substring(1);
+
+            // Hide all tab contents
+            tabContents.forEach((content) => {
+              content.classList.remove("active");
+            });
+
+            // Show the target tab content
+            document.getElementById(targetId).classList.add("active");
+
+            // Update active state on nav links
+            tabLinks.forEach((link) => {
+              link.classList.remove("active");
+            });
+            this.classList.add("active");
+
+            // Close mobile menu if open
+            document.getElementById("mobile-menu").classList.add("hidden");
+          });
+        });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        // Toast notification
+        function showToast(message, duration = 3000) {
+          const toast = document.getElementById("toast");
+          const toastMessage = document.getElementById("toast-message");
+
+          toastMessage.textContent = message;
+          toast.classList.add("show");
+
+          setTimeout(() => {
+            toast.classList.remove("show");
+          }, duration);
+        }
+
+        // Example toast trigger
+        const saveButton = document.querySelector("button:nth-of-type(1)");
+        if (saveButton) {
+          saveButton.addEventListener("click", function () {
+            showToast("Product saved to history!");
+          });
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Comparison Chart
+        if (document.getElementById("comparison-chart")) {
+          const comparisonChart = echarts.init(
+            document.getElementById("comparison-chart"),
+          );
+
+          const comparisonOption = {
+            animation: false,
+            tooltip: {
+              trigger: "axis",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              textStyle: {
+                color: "#1f2937",
+              },
+            },
+            legend: {
+              data: ["Sugar Content (g)"],
+              textStyle: {
+                color: "#E0E0E0",
+              },
+            },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "3%",
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              data: [
+                "Chocolate Chip Cookies",
+                "Similar Brand A",
+                "Similar Brand B",
+                "Similar Brand C",
+                "Average",
+              ],
+              axisLabel: {
+                color: "#E0E0E0",
+                rotate: 30,
+              },
+            },
+            yAxis: {
+              type: "value",
+              name: "Sugar Content (g)",
+              nameTextStyle: {
+                color: "#E0E0E0",
+              },
+              axisLabel: {
+                color: "#E0E0E0",
+              },
+            },
+            series: [
+              {
+                name: "Sugar Content (g)",
+                type: "bar",
+                data: [12, 15, 10, 18, 14],
+                itemStyle: {
+                  color: "rgba(87, 181, 231, 1)",
+                  borderRadius: [5, 5, 0, 0],
+                },
+                emphasis: {
+                  itemStyle: {
+                    color: "rgba(87, 181, 231, 0.8)",
+                  },
+                },
+              },
+            ],
+          };
+
+          comparisonChart.setOption(comparisonOption);
+
+          window.addEventListener("resize", function () {
+            comparisonChart.resize();
+          });
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Trends Chart
+        if (document.getElementById("trends-chart")) {
+          const trendsChart = echarts.init(document.getElementById("trends-chart"));
+
+          const trendsOption = {
+            animation: false,
+            tooltip: {
+              trigger: "axis",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              textStyle: {
+                color: "#1f2937",
+              },
+            },
+            legend: {
+              data: ["Daily Sugar Intake", "Recommended Limit"],
+              textStyle: {
+                color: "#E0E0E0",
+              },
+            },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "3%",
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              boundaryGap: false,
+              data: [
+                "May 15",
+                "May 16",
+                "May 17",
+                "May 18",
+                "May 19",
+                "May 20",
+                "May 21",
+              ],
+              axisLabel: {
+                color: "#E0E0E0",
+              },
+            },
+            yAxis: {
+              type: "value",
+              name: "Sugar (g)",
+              nameTextStyle: {
+                color: "#E0E0E0",
+              },
+              axisLabel: {
+                color: "#E0E0E0",
+              },
+            },
+            series: [
+              {
+                name: "Daily Sugar Intake",
+                type: "line",
+                data: [32, 45, 29, 54, 22, 38, 30],
+                smooth: true,
+                symbol: "none",
+                lineStyle: {
+                  color: "rgba(87, 181, 231, 1)",
+                  width: 3,
+                },
+                areaStyle: {
+                  color: {
+                    type: "linear",
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    colorStops: [
+                      {
+                        offset: 0,
+                        color: "rgba(87, 181, 231, 0.3)",
+                      },
+                      {
+                        offset: 1,
+                        color: "rgba(87, 181, 231, 0.1)",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                name: "Recommended Limit",
+                type: "line",
+                data: [50, 50, 50, 50, 50, 50, 50],
+                smooth: true,
+                symbol: "none",
+                lineStyle: {
+                  color: "rgba(252, 141, 98, 1)",
+                  width: 2,
+                  type: "dashed",
+                },
+              },
+            ],
+          };
+
+          trendsChart.setOption(trendsOption);
+
+          window.addEventListener("resize", function () {
+            trendsChart.resize();
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
