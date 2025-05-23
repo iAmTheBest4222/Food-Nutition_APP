@@ -41,89 +41,91 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
     />
     <style>
-      :where([class^="ri-"])::before { content: "\f3c2"; }
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
       body {
-          font-family: 'Inter', sans-serif;
-          background-color: #121212;
-          color: #E0E0E0;
-          min-height: 100vh;
+        font-family: "Inter", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+        min-height: 100vh;
       }
       .glass {
-          background: rgba(30, 30, 30, 0.6);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
       .form-input {
-          background-color: #2D2D2D;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #E0E0E0;
-          transition: all 0.3s ease;
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e0e0e0;
+        transition: all 0.3s ease;
       }
       .form-input:focus {
-          border-color: #FF4646;
-          outline: none;
-          box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
+        border-color: #ff4646;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
       }
       .social-btn {
-          background-color: #2D2D2D;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          transition: all 0.3s ease;
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
       }
       .social-btn:hover {
-          background-color: #353535;
+        background-color: #353535;
       }
       .divider {
-          height: 1px;
-          background: rgba(255, 255, 255, 0.1);
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
       }
       input[type="checkbox"] {
-          display: none;
+        display: none;
       }
       .custom-checkbox {
-          width: 18px;
-          height: 18px;
-          background: #2D2D2D;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 4px;
-          position: relative;
-          cursor: pointer;
-          transition: all 0.2s ease;
+        width: 18px;
+        height: 18px;
+        background: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
       input[type="checkbox"]:checked + .custom-checkbox {
-          background: #FF4646;
-          border-color: #FF4646;
+        background: #ff4646;
+        border-color: #ff4646;
       }
       input[type="checkbox"]:checked + .custom-checkbox::after {
-          content: '';
-          position: absolute;
-          top: 4px;
-          left: 6px;
-          width: 5px;
-          height: 9px;
-          border: solid white;
-          border-width: 0 2px 2px 0;
-          transform: rotate(45deg);
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 6px;
+        width: 5px;
+        height: 9px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
       }
       .select-wrapper {
-          position: relative;
+        position: relative;
       }
       .select-wrapper::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          right: 12px;
-          transform: translateY(-50%);
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-top: 5px solid #9CA3AF;
-          pointer-events: none;
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #9ca3af;
+        pointer-events: none;
       }
       .custom-select {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
       }
     </style>
   </head>
@@ -138,11 +140,19 @@
 
       <div class="glass rounded-xl p-6 md:p-8">
         <h2 class="text-2xl font-semibold mb-6 text-center">Create Account</h2>
+        <form id="signupForm" action="/signin" method="POST">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div
+            class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-500/10 text-red-500{% else %}bg-green-500/10 text-green-500{% endif %}"
+          >
+            {{ message }}
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
 
-        <form id="signupForm">
           <div class="mb-5">
             <label
-              for="fullName"
+              for="name"
               class="block text-sm font-medium text-[#9CA3AF] mb-2"
               >Full Name</label
             >
@@ -158,7 +168,8 @@
               </div>
               <input
                 type="text"
-                id="fullName"
+                id="name"
+                name="name"
                 class="form-input w-full py-3 pl-10 pr-3 rounded-button"
                 placeholder="Enter your full name"
                 required
@@ -185,6 +196,7 @@
               <input
                 type="email"
                 id="email"
+                name="email"
                 class="form-input w-full py-3 pl-10 pr-3 rounded-button"
                 placeholder="Enter your email"
                 required
@@ -211,6 +223,7 @@
               <input
                 type="password"
                 id="password"
+                name="password"
                 class="form-input w-full py-3 pl-10 pr-10 rounded-button"
                 placeholder="Create a password"
                 required
@@ -261,6 +274,31 @@
               </div>
             </div>
           </div>
+          <div class="mb-5">
+            <label
+              for="phone"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Phone Number</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-phone-line"></i>
+                </div>
+              </div>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                class="form-input w-full py-3 pl-10 pr-3 rounded-button"
+                placeholder="Enter your phone number (optional)"
+              />
+            </div>
+          </div>
 
           <div class="mb-5">
             <label
@@ -280,9 +318,10 @@
               </div>
               <input
                 type="date"
-                id="birthDate"
+                id="dob"
+                name="dob"
                 class="form-input w-full py-3 pl-10 pr-3 rounded-button text-sm"
-                required
+                max="{{ '2025-05-23' }}"
               />
             </div>
           </div>
@@ -373,15 +412,19 @@
               <i class="ri-instagram-fill"></i>
             </div>
           </button>
-          </div>
+        </div>
 
-          <p class="text-center text-sm text-[#9CA3AF]">
+        <p class="text-center text-sm text-[#9CA3AF]">
           Already have an account?
-               <a href="login_page.html" data-readdy="true" class="text-primary hover:text-[#ff5e5e] font-medium transition-colors">
-               Log In
-               </a>
-          </p>
-          </div>
+          <a
+            href="/login"
+            data-readdy="true"
+            class="text-primary hover:text-[#ff5e5e] font-medium transition-colors"
+          >
+            Log In
+          </a>
+        </p>
+      </div>
 
       <p class="text-center text-xs text-[#9CA3AF] mt-6">
         © 2025 GlucoseTracker. All rights reserved.
@@ -414,13 +457,15 @@
     <script id="confirmPasswordToggleScript">
       document.addEventListener("DOMContentLoaded", function () {
         const toggleConfirmPassword = document.getElementById(
-          "toggleConfirmPassword",
+          "toggleConfirmPassword"
         );
         const confirmPassword = document.getElementById("confirmPassword");
 
         toggleConfirmPassword.addEventListener("click", function () {
           const type =
-            confirmPassword.getAttribute("type") === "password" ? "text" : "password";
+            confirmPassword.getAttribute("type") === "password"
+              ? "text"
+              : "password";
           confirmPassword.setAttribute("type", type);
 
           // Toggle icon
@@ -435,7 +480,6 @@
         });
       });
     </script>
-
     <script id="formSubmitScript">
       document.addEventListener("DOMContentLoaded", function () {
         const signupForm = document.getElementById("signupForm");
@@ -443,48 +487,43 @@
         signupForm.addEventListener("submit", function (e) {
           e.preventDefault();
 
-          const fullName = document.getElementById("fullName").value;
-          const email = document.getElementById("email").value;
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
-          const confirmPassword = document.getElementById("confirmPassword").value;
-          const birthDate = document.getElementById("birthDate").value;
-          const diabetesType = document.getElementById("diabetesType").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
 
-          // Validate passwords match
-          if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+          // Clear any existing error messages
+          const existingErrors = signupForm.querySelectorAll(".error-message");
+          existingErrors.forEach((error) => error.remove());
+
+          // Validate required fields
+          if (!name || !email || !password) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className =
+              "mb-4 p-4 rounded-lg bg-red-500/10 text-red-500 error-message";
+            errorDiv.textContent =
+              "Please fill in all required fields (Name, Email, and Password)";
+            signupForm.insertBefore(errorDiv, signupForm.firstChild);
             return;
           }
 
-          // Here you would typically send the data to your backend
-          console.log("Signup attempt:", {
-            fullName,
-            email,
-            password,
-            birthDate,
-            diabetesType,
-          });
+          // Validate passwords match
+          if (password !== confirmPassword) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className =
+              "mb-4 p-4 rounded-lg bg-red-500/10 text-red-500 error-message";
+            errorDiv.textContent = "Passwords do not match!";
+            signupForm.insertBefore(errorDiv, signupForm.firstChild);
+            return;
+          }
 
-          // Simulate successful signup
+          // All validation passed, submit the form
           const button = signupForm.querySelector('button[type="submit"]');
-          const originalText = button.textContent;
-
           button.disabled = true;
           button.innerHTML =
             '<span class="inline-block animate-spin mr-2"><i class="ri-loader-4-line"></i></span> Creating account...';
-
-          setTimeout(() => {
-            button.innerHTML =
-              '<span class="inline-block mr-2"><i class="ri-check-line"></i></span> Success!';
-            button.classList.remove("bg-primary");
-            button.classList.add("bg-[#4CAF50]");
-
-            setTimeout(() => {
-              // Redirect to login page
-              window.location.href =
-                "https://readdy.ai/home/3817ed2f-a67c-4b8a-bfe7-40425a3347b7/cea9a0eb-4720-4cc1-899f-3a7f9e29c19a";
-            }, 1500);
-          }, 1500);
+          signupForm.submit();
         });
       });
     </script>

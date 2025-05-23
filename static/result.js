@@ -4,6 +4,43 @@ document.addEventListener("DOMContentLoaded", function () {
   const toast = document.getElementById("toast");
   const toastMessage = document.getElementById("toast-message");
 
+  // Update suitability indicator
+  const suitabilityText = document.getElementById("suitabilityText");
+  const suitabilityIcon = document.getElementById("suitabilityIcon");
+  const suitabilityDescription = document.getElementById(
+    "suitabilityDescription"
+  );
+
+  if (suitabilityText && suitabilityIcon && suitabilityDescription) {
+    const text = suitabilityText.textContent.trim();
+
+    if (text === "Suitable for regular consumption") {
+      suitabilityIcon.className =
+        "w-8 h-8 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center mr-3";
+      suitabilityIcon.innerHTML =
+        '<i class="ri-check-line ri-lg text-green-500"></i>';
+      suitabilityText.className = "text-lg text-green-500 font-medium";
+      suitabilityDescription.textContent =
+        "This product meets your dietary preferences and falls within your sugar threshold limits.";
+    } else if (text === "Not suitable for regular consumption") {
+      suitabilityIcon.className =
+        "w-8 h-8 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center mr-3";
+      suitabilityIcon.innerHTML =
+        '<i class="ri-close-line ri-lg text-red-500"></i>';
+      suitabilityText.className = "text-lg text-red-500 font-medium";
+      suitabilityDescription.textContent =
+        "This product does not meet the recommended dietary guidelines for regular consumption.";
+    } else {
+      suitabilityIcon.className =
+        "w-8 h-8 bg-gray-500 bg-opacity-20 rounded-full flex items-center justify-center mr-3";
+      suitabilityIcon.innerHTML =
+        '<i class="ri-question-line ri-lg text-gray-500"></i>';
+      suitabilityText.className = "text-lg text-gray-500 font-medium";
+      suitabilityDescription.textContent =
+        "Unable to determine product suitability.";
+    }
+  }
+
   // Add animation to nutrition cards
   const nutritionCards = document.querySelectorAll(".nutrition-card");
   nutritionCards.forEach((card, index) => {

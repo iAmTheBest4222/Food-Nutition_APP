@@ -93,28 +93,17 @@
         >
         <nav class="hidden md:flex space-x-8">
           <a
-            href="UI.html"
+            href="/"
             class="nav-link text-white hover:text-primary transition-colors"
             >Home</a
           >
-          <a
-            href="result.html"
-            class="nav-link text-white hover:text-primary transition-colors"
-            >Results</a
-          >
+
           <a
             href="#"
             class="nav-link text-white hover:text-primary transition-colors active"
             >History</a
           >
         </nav>
-        <div class="flex items-center space-x-4">
-          <button
-            class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 !rounded-button whitespace-nowrap transition-colors"
-          >
-            <i class="ri-user-line mr-2"></i>Sign In
-          </button>
-        </div>
       </div>
     </header>
 
@@ -137,7 +126,7 @@
               <div class="mb-4 md:mb-0">
                 <h3 class="text-xl font-semibold text-white">Recent Scans</h3>
                 <p class="text-sm text-gray-400">
-                  You have scanned 24 products in total
+                  You have scanned {{ scanned_foods|length }} products in total
                 </p>
               </div>
               <div class="flex flex-col sm:flex-row gap-4">
@@ -158,185 +147,57 @@
                 </select>
               </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {% if scanned_foods %} {% for food in scanned_foods %}
               <div class="history-card glass-effect p-4 rounded-lg">
                 <div class="flex items-center mb-3">
                   <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20chip%20cookies%20in%20packaging%2C%20product%20photography%20on%20dark%20background%2C%20high%20quality%20food%20photography&width=80&height=80&seq=3&orientation=squarish"
-                    alt="Chocolate Chip Cookies"
+                    src="{{ food.image_url if food.image_url != 'N/A' else 'https://placehold.co/80x80/2d2d2d/gray?text=No+Image' }}"
+                    alt="{{ food.product_name }}"
                     class="w-16 h-16 object-cover rounded mr-3"
                   />
                   <div>
                     <h4 class="text-white font-medium">
-                      Chocolate Chip Cookies
+                      {{ food.product_name }}
                     </h4>
-                    <p class="text-sm text-gray-400">Delicious Treats</p>
+                    <p class="text-sm text-gray-400">{{ food.brand }}</p>
                   </div>
                 </div>
                 <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 21, 2025</span>
+                  <span class="text-sm text-gray-400"
+                    >{{ food.scanned_at.strftime('%b %d, %Y') }}</span
+                  >
                   <span
-                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
-                    >Suitable</span
+                    class="px-2 py-1 {% if food.is_suitable %}bg-green-500 bg-opacity-20 text-green-500{% else %}bg-red-500 bg-opacity-20 text-red-500{% endif %} text-xs rounded-full"
+                    >{{ "Suitable" if food.is_suitable else "Not Suitable"
+                    }}</span
                   >
                 </div>
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 12g per serving</span>
+                  <span class="text-gray-400">{{ food.sugar_content }}</span>
                   <button
+                    onclick="window.location.href='{{ url_for('upload_img', id=food.food_id) }}'"
                     class="text-primary hover:text-white transition-colors"
                   >
                     <i class="ri-arrow-right-line"></i>
                   </button>
                 </div>
               </div>
-
-              <div class="history-card glass-effect p-4 rounded-lg">
-                <div class="flex items-center mb-3">
-                  <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20cereal%20box%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=4&orientation=squarish"
-                    alt="Breakfast Cereal"
-                    class="w-16 h-16 object-cover rounded mr-3"
-                  />
-                  <div>
-                    <h4 class="text-white font-medium">Breakfast Cereal</h4>
-                    <p class="text-sm text-gray-400">Morning Crunch</p>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 20, 2025</span>
-                  <span
-                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
-                    >Not Suitable</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 18g per serving</span>
-                  <button
-                    class="text-primary hover:text-white transition-colors"
-                  >
-                    <i class="ri-arrow-right-line"></i>
-                  </button>
-                </div>
+              {% endfor %} {% else %}
+              <div class="col-span-3 text-center py-8">
+                <p class="text-gray-400 mb-4">
+                  No scanned items in your history yet.
+                </p>
+                <a
+                  href="/"
+                  class="inline-block bg-primary hover:bg-opacity-80 text-white px-6 py-3 rounded-button transition-colors"
+                >
+                  Scan Your First Item
+                </a>
               </div>
-
-              <div class="history-card glass-effect p-4 rounded-lg">
-                <div class="flex items-center mb-3">
-                  <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20yogurt%20container%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=5&orientation=squarish"
-                    alt="Greek Yogurt"
-                    class="w-16 h-16 object-cover rounded mr-3"
-                  />
-                  <div>
-                    <h4 class="text-white font-medium">Greek Yogurt</h4>
-                    <p class="text-sm text-gray-400">Creamy Delight</p>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 19, 2025</span>
-                  <span
-                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
-                    >Suitable</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 6g per serving</span>
-                  <button
-                    class="text-primary hover:text-white transition-colors"
-                  >
-                    <i class="ri-arrow-right-line"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="history-card glass-effect p-4 rounded-lg">
-                <div class="flex items-center mb-3">
-                  <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20soda%20bottle%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20beverage%20packaging&width=80&height=80&seq=6&orientation=squarish"
-                    alt="Soda Drink"
-                    class="w-16 h-16 object-cover rounded mr-3"
-                  />
-                  <div>
-                    <h4 class="text-white font-medium">Soda Drink</h4>
-                    <p class="text-sm text-gray-400">Fizzy Pop</p>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 18, 2025</span>
-                  <span
-                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
-                    >Not Suitable</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 39g per serving</span>
-                  <button
-                    class="text-primary hover:text-white transition-colors"
-                  >
-                    <i class="ri-arrow-right-line"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="history-card glass-effect p-4 rounded-lg">
-                <div class="flex items-center mb-3">
-                  <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20granola%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=7&orientation=squarish"
-                    alt="Granola Bar"
-                    class="w-16 h-16 object-cover rounded mr-3"
-                  />
-                  <div>
-                    <h4 class="text-white font-medium">Granola Bar</h4>
-                    <p class="text-sm text-gray-400">Nature's Best</p>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 17, 2025</span>
-                  <span
-                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
-                    >Suitable</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 8g per serving</span>
-                  <button
-                    class="text-primary hover:text-white transition-colors"
-                  >
-                    <i class="ri-arrow-right-line"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="history-card glass-effect p-4 rounded-lg">
-                <div class="flex items-center mb-3">
-                  <img
-                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=8&orientation=squarish"
-                    alt="Chocolate Bar"
-                    class="w-16 h-16 object-cover rounded mr-3"
-                  />
-                  <div>
-                    <h4 class="text-white font-medium">Chocolate Bar</h4>
-                    <p class="text-sm text-gray-400">Sweet Delights</p>
-                  </div>
-                </div>
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm text-gray-400">May 16, 2025</span>
-                  <span
-                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
-                    >Not Suitable</span
-                  >
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-gray-400">Sugar: 24g per serving</span>
-                  <button
-                    class="text-primary hover:text-white transition-colors"
-                  >
-                    <i class="ri-arrow-right-line"></i>
-                  </button>
-                </div>
-              </div>
+              {% endif %}
             </div>
-
+            {% if scanned_foods and scanned_foods|length >= 6 %}
             <div class="flex justify-center mt-8">
               <button
                 class="bg-secondary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors"
@@ -344,6 +205,7 @@
                 Load More
               </button>
             </div>
+            {% endif %}
           </div>
 
           <div class="glass-effect p-6 rounded-lg">

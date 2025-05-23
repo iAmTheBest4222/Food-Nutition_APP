@@ -41,68 +41,70 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
     />
     <style>
-      :where([class^="ri-"])::before { content: "\f3c2"; }
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
       body {
-      font-family: 'Inter', sans-serif;
-      background-color: #121212;
-      color: #E0E0E0;
-      min-height: 100vh;
+        font-family: "Inter", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+        min-height: 100vh;
       }
       .glass {
-      background: rgba(30, 30, 30, 0.6);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
       .form-input {
-      background-color: #2D2D2D;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #E0E0E0;
-      transition: all 0.3s ease;
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e0e0e0;
+        transition: all 0.3s ease;
       }
       .form-input:focus {
-      border-color: #FF4646;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
+        border-color: #ff4646;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
       }
       .social-btn {
-      background-color: #2D2D2D;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.3s ease;
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
       }
       .social-btn:hover {
-      background-color: #353535;
+        background-color: #353535;
       }
       .divider {
-      height: 1px;
-      background: rgba(255, 255, 255, 0.1);
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
       }
       input[type="checkbox"] {
-      display: none;
+        display: none;
       }
       .custom-checkbox {
-      width: 18px;
-      height: 18px;
-      background: #2D2D2D;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 4px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.2s ease;
+        width: 18px;
+        height: 18px;
+        background: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
       input[type="checkbox"]:checked + .custom-checkbox {
-      background: #FF4646;
-      border-color: #FF4646;
+        background: #ff4646;
+        border-color: #ff4646;
       }
       input[type="checkbox"]:checked + .custom-checkbox::after {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 6px;
-      width: 5px;
-      height: 9px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 6px;
+        width: 5px;
+        height: 9px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
       }
     </style>
   </head>
@@ -116,7 +118,15 @@
       </div>
       <div class="glass rounded-xl p-6 md:p-8">
         <h2 class="text-2xl font-semibold mb-6 text-center">Welcome Back</h2>
-        <form id="loginForm">
+        <form id="loginForm" action="{{ url_for('login') }}" method="POST">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div
+            class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-500/10 text-red-500{% else %}bg-green-500/10 text-green-500{% endif %}"
+          >
+            {{ message }}
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
           <div class="mb-5">
             <label
               for="email"
@@ -136,6 +146,7 @@
               <input
                 type="email"
                 id="email"
+                name="email"
                 class="form-input w-full py-3 pl-10 pr-3 rounded-button"
                 placeholder="Enter your email"
                 required
@@ -168,6 +179,7 @@
               <input
                 type="password"
                 id="password"
+                name="password"
                 class="form-input w-full py-3 pl-10 pr-10 rounded-button"
                 placeholder="Enter your password"
                 required
@@ -185,7 +197,12 @@
           </div>
           <div class="flex items-center mb-6">
             <label class="flex items-center cursor-pointer">
-              <input type="checkbox" id="remember" class="hidden" />
+              <input
+                type="checkbox"
+                id="remember"
+                name="remember"
+                class="hidden"
+              />
               <span class="custom-checkbox mr-2"></span>
               <span class="text-sm text-[#9CA3AF]">Remember me</span>
             </label>
@@ -232,9 +249,14 @@
           </button>
         </div>
         <p class="text-center text-sm text-[#9CA3AF]">
-    Don't have an account?
-    <a href="sign_up_page.html" data-readdy="true" class="text-primary hover:text-[#ff5e5e] font-medium transition-colors">Sign Up</a>
-  </p>
+          Don't have an account?
+          <a
+            href="/signin"
+            data-readdy="true"
+            class="text-primary hover:text-[#ff5e5e] font-medium transition-colors"
+            >Sign Up</a
+          >
+        </p>
       </div>
       <p class="text-center text-xs text-[#9CA3AF] mt-6">
         © 2025 GlucoseTracker. All rights reserved.
@@ -257,36 +279,6 @@
             icon.classList.remove("ri-eye-off-line");
             icon.classList.add("ri-eye-line");
           }
-        });
-      });
-    </script>
-    <script id="formSubmitScript">
-      document.addEventListener("DOMContentLoaded", function () {
-        const loginForm = document.getElementById("loginForm");
-        loginForm.addEventListener("submit", function (e) {
-          e.preventDefault();
-          const email = document.getElementById("email").value;
-          const password = document.getElementById("password").value;
-          // Here you would typically send the data to your backend
-          console.log("Login attempt:", { email, password });
-          // Simulate successful login
-          const button = loginForm.querySelector('button[type="submit"]');
-          const originalText = button.textContent;
-          button.disabled = true;
-          button.innerHTML =
-            '<span class="inline-block animate-spin mr-2"><i class="ri-loader-4-line"></i></span> Signing in...';
-          setTimeout(() => {
-            button.innerHTML =
-              '<span class="inline-block mr-2"><i class="ri-check-line"></i></span> Success!';
-            button.classList.remove("bg-primary");
-            button.classList.add("bg-[#4CAF50]");
-            setTimeout(() => {
-              button.disabled = false;
-              button.textContent = originalText;
-              button.classList.remove("bg-[#4CAF50]");
-              button.classList.add("bg-primary");
-            }, 1500);
-          }, 1500);
         });
       });
     </script>

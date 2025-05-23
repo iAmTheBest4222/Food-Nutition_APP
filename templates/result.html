@@ -278,7 +278,7 @@
         >
         <nav class="hidden md:flex space-x-8">
           <a
-            href="UI.html"
+            href="/"
             class="nav-link text-white hover:text-primary transition-colors"
             >Home</a
           >
@@ -288,7 +288,7 @@
             >Results</a
           >
           <a
-            href="history.html"
+            href="/history"
             class="nav-link text-white hover:text-primary transition-colors"
             >History</a
           >
@@ -325,19 +325,19 @@
               <div class="md:w-2/3">
                 <h3 class="text-2xl font-bold text-white mb-2">{{ a }}</h3>
                 <p class="text-gray-400 mb-4">Brand: {{ b }}</p>
-                <div class="flex items-center mb-4">
+                <div class="flex items-center mb-4" id="suitabilityIndicator">
                   <div
-                    class="w-8 h-8 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center mr-3"
+                    class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                    id="suitabilityIcon"
                   >
-                    <i class="ri-check-line ri-lg text-green-500"></i>
+                    <!-- Icon will be injected by JavaScript -->
                   </div>
-                  <span class="text-lg text-green-500 font-medium"
-                    >Suitable for your diet</span
+                  <span class="text-lg font-medium" id="suitabilityText"
+                    >{{i}}</span
                   >
                 </div>
-                <p class="text-gray-300">
-                  This product meets your dietary preferences and falls within
-                  your sugar threshold limits.
+                <p class="text-gray-300" id="suitabilityDescription">
+                  <!-- Description will be updated by JavaScript -->
                 </p>
               </div>
             </div>
