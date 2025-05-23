@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodScan - History</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#FF4646", secondary: "#2D2D2D" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              button: "100px",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .search-bar {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .history-card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 70, 70, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 70, 70, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 70, 70, 0);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a;
+        padding: 12px 24px;
+        border-radius: 100px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <a href="UI.html" class="text-2xl font-['Pacifico'] text-white"
+          >FoodScan</a
+        >
+        <nav class="hidden md:flex space-x-8">
+          <a
+            href="UI.html"
+            class="nav-link text-white hover:text-primary transition-colors"
+            >Home</a
+          >
+          <a
+            href="result.html"
+            class="nav-link text-white hover:text-primary transition-colors"
+            >Results</a
+          >
+          <a
+            href="#"
+            class="nav-link text-white hover:text-primary transition-colors active"
+            >History</a
+          >
+        </nav>
+        <div class="flex items-center space-x-4">
+          <button
+            class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 !rounded-button whitespace-nowrap transition-colors"
+          >
+            <i class="ri-user-line mr-2"></i>Sign In
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- History Section -->
+      <section id="history" class="tab-content min-h-screen py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-white mb-4">
+              Your Scan History
+            </h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+              Review your previously scanned products
+            </p>
+          </div>
+          <div class="glass-effect p-6 rounded-lg mb-8">
+            <div
+              class="flex flex-col md:flex-row justify-between items-center mb-6"
+            >
+              <div class="mb-4 md:mb-0">
+                <h3 class="text-xl font-semibold text-white">Recent Scans</h3>
+                <p class="text-sm text-gray-400">
+                  You have scanned 24 products in total
+                </p>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="search-bar flex items-center p-2 rounded-lg">
+                  <i class="ri-search-line text-gray-400 mx-2"></i>
+                  <input
+                    type="text"
+                    placeholder="Search history..."
+                    class="bg-transparent border-none outline-none text-white w-full py-1 text-sm"
+                  />
+                </div>
+                <select
+                  class="bg-secondary text-white px-4 py-2 rounded border border-gray-700 outline-none pr-8"
+                >
+                  <option>All Products</option>
+                  <option>Suitable Only</option>
+                  <option>Not Suitable</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20chip%20cookies%20in%20packaging%2C%20product%20photography%20on%20dark%20background%2C%20high%20quality%20food%20photography&width=80&height=80&seq=3&orientation=squarish"
+                    alt="Chocolate Chip Cookies"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">
+                      Chocolate Chip Cookies
+                    </h4>
+                    <p class="text-sm text-gray-400">Delicious Treats</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 21, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 12g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20cereal%20box%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=4&orientation=squarish"
+                    alt="Breakfast Cereal"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Breakfast Cereal</h4>
+                    <p class="text-sm text-gray-400">Morning Crunch</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 20, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 18g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20yogurt%20container%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=5&orientation=squarish"
+                    alt="Greek Yogurt"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Greek Yogurt</h4>
+                    <p class="text-sm text-gray-400">Creamy Delight</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 19, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 6g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20soda%20bottle%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20beverage%20packaging&width=80&height=80&seq=6&orientation=squarish"
+                    alt="Soda Drink"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Soda Drink</h4>
+                    <p class="text-sm text-gray-400">Fizzy Pop</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 18, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 39g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20granola%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=7&orientation=squarish"
+                    alt="Granola Bar"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Granola Bar</h4>
+                    <p class="text-sm text-gray-400">Nature's Best</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 17, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-green-500 bg-opacity-20 text-green-500 text-xs rounded-full"
+                    >Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 8g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="history-card glass-effect p-4 rounded-lg">
+                <div class="flex items-center mb-3">
+                  <img
+                    src="https://readdy.ai/api/search-image?query=realistic%20chocolate%20bar%20packaging%20on%20dark%20background%2C%20product%20photography%2C%20high%20quality%20food%20packaging&width=80&height=80&seq=8&orientation=squarish"
+                    alt="Chocolate Bar"
+                    class="w-16 h-16 object-cover rounded mr-3"
+                  />
+                  <div>
+                    <h4 class="text-white font-medium">Chocolate Bar</h4>
+                    <p class="text-sm text-gray-400">Sweet Delights</p>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-sm text-gray-400">May 16, 2025</span>
+                  <span
+                    class="px-2 py-1 bg-red-500 bg-opacity-20 text-red-500 text-xs rounded-full"
+                    >Not Suitable</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-gray-400">Sugar: 24g per serving</span>
+                  <button
+                    class="text-primary hover:text-white transition-colors"
+                  >
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-center mt-8">
+              <button
+                class="bg-secondary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors"
+              >
+                Load More
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-effect p-6 rounded-lg">
+            <h3 class="text-xl font-semibold text-white mb-6">
+              Your Sugar Intake Trends
+            </h3>
+            <div id="trends-chart" class="w-full h-80"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-secondary py-12 mt-16">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <a
+              href="#"
+              class="text-2xl font-['Pacifico'] text-white mb-4 inline-block"
+              >FoodScan</a
+            >
+            <p class="text-gray-400 mb-4">
+              Making healthy eating choices easier with instant food analysis.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-facebook-fill ri-lg"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-twitter-fill ri-lg"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-primary transition-colors w-10 h-10 flex items-center justify-center"
+              >
+                <i class="ri-instagram-fill ri-lg"></i>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="UI.html"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Support</h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Terms of Service</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  >Contact Us</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-4">Newsletter</h4>
+            <p class="text-gray-400 mb-4">
+              Subscribe to our newsletter for updates and tips.
+            </p>
+            <form class="flex">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                class="bg-gray-800 text-white px-4 py-2 rounded-l outline-none flex-1"
+              />
+              <button
+                class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 rounded-r transition-colors"
+              >
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center"
+        >
+          <p class="text-gray-400 mb-4 md:mb-0">
+            © 2025 FoodScan. All rights reserved.
+          </p>
+          <div class="flex space-x-6">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+              >Privacy</a
+            >
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+              >Terms</a
+            >
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+              >Cookies</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast">
+      <div class="flex items-center">
+        <i class="ri-check-line ri-lg text-primary mr-3"></i>
+        <span id="toast-message">Action completed successfully!</span>
+      </div>
+    </div>
+
+    <script src="../static/script.js"></script>
+  </body>
+</html>

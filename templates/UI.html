@@ -42,229 +42,232 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <style>
-      :where([class^="ri-"])::before { content: "\f3c2"; }
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
       body {
-          font-family: 'Inter', sans-serif;
-          background-color: #121212;
-          color: #E0E0E0;
+        font-family: "Inter", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
       }
       .glass-effect {
-          background: rgba(30, 30, 30, 0.6);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
       .search-bar {
-          background: rgba(30, 30, 30, 0.6);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          transition: all 0.3s ease;
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
       }
       .search-bar:focus-within {
-          border-color: #FF4646;
-          box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
+        border-color: #ff4646;
+        box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
       }
       .feature-card {
-          transition: all 0.3s ease;
+        transition: all 0.3s ease;
       }
       .feature-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
       }
       .nav-link {
-          position: relative;
+        position: relative;
       }
       .nav-link::after {
-          content: '';
-          position: absolute;
-          width: 0;
-          height: 2px;
-          bottom: -2px;
-          left: 0;
-          background-color: #FF4646;
-          transition: width 0.3s ease;
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #ff4646;
+        transition: width 0.3s ease;
       }
-      .nav-link:hover::after, .nav-link.active::after {
-          width: 100%;
+      .nav-link:hover::after,
+      .nav-link.active::after {
+        width: 100%;
       }
       .history-card {
-          transition: all 0.3s ease;
+        transition: all 0.3s ease;
       }
       .history-card:hover {
-          transform: scale(1.02);
+        transform: scale(1.02);
       }
       input[type="file"] {
-          display: none;
+        display: none;
       }
       input[type="range"]::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: #FF4646;
-          cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #ff4646;
+        cursor: pointer;
       }
       .tab-content {
-          display: none;
+        display: none;
       }
       .tab-content.active {
-          display: block;
+        display: block;
       }
       .pulse {
-          animation: pulse 2s infinite;
+        animation: pulse 2s infinite;
       }
       @keyframes pulse {
-          0% {
-              transform: scale(0.95);
-              box-shadow: 0 0 0 0 rgba(255, 70, 70, 0.7);
-          }
-          70% {
-              transform: scale(1);
-              box-shadow: 0 0 0 10px rgba(255, 70, 70, 0);
-          }
-          100% {
-              transform: scale(0.95);
-              box-shadow: 0 0 0 0 rgba(255, 70, 70, 0);
-          }
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(255, 70, 70, 0.7);
+        }
+        70% {
+          transform: scale(1);
+          box-shadow: 0 0 0 10px rgba(255, 70, 70, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(255, 70, 70, 0);
+        }
       }
       .sugar-meter {
-          height: 10px;
-          border-radius: 5px;
-          background: rgba(255, 255, 255, 0.1);
-          overflow: hidden;
-          position: relative;
+        height: 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+        position: relative;
       }
       .sugar-level {
-          height: 100%;
-          background: linear-gradient(to right, #4CAF50, #FFC107, #FF4646);
-          border-radius: 5px;
-          transition: width 1s ease-in-out;
+        height: 100%;
+        background: linear-gradient(to right, #4caf50, #ffc107, #ff4646);
+        border-radius: 5px;
+        transition: width 1s ease-in-out;
       }
       .circular-progress {
-          position: relative;
-          width: 80px;
-          height: 80px;
+        position: relative;
+        width: 80px;
+        height: 80px;
       }
       .circular-progress svg {
-          transform: rotate(-90deg);
+        transform: rotate(-90deg);
       }
       .circular-progress circle {
-          fill: none;
-          stroke-width: 8;
-          stroke-linecap: round;
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
       }
       .circular-progress .bg {
-          stroke: rgba(255, 255, 255, 0.1);
+        stroke: rgba(255, 255, 255, 0.1);
       }
       .circular-progress .progress {
-          stroke: #FF4646;
-          transition: stroke-dashoffset 1s ease;
+        stroke: #ff4646;
+        transition: stroke-dashoffset 1s ease;
       }
       .circular-progress .text {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 18px;
-          font-weight: 600;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 18px;
+        font-weight: 600;
       }
       .toast {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          padding: 12px 20px;
-          background: rgba(30, 30, 30, 0.9);
-          border-left: 4px solid #FF4646;
-          border-radius: 4px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-          z-index: 1000;
-          transform: translateX(120%);
-          transition: transform 0.3s ease;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: rgba(30, 30, 30, 0.9);
+        border-left: 4px solid #ff4646;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        transform: translateX(120%);
+        transition: transform 0.3s ease;
       }
       .toast.show {
-          transform: translateX(0);
+        transform: translateX(0);
       }
       .custom-switch {
-          position: relative;
-          display: inline-block;
-          width: 50px;
-          height: 24px;
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
       }
       .custom-switch input {
-          opacity: 0;
-          width: 0;
-          height: 0;
+        opacity: 0;
+        width: 0;
+        height: 0;
       }
       .switch-slider {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(255, 255, 255, 0.1);
-          transition: .4s;
-          border-radius: 34px;
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: 0.4s;
+        border-radius: 34px;
       }
       .switch-slider:before {
-          position: absolute;
-          content: "";
-          height: 18px;
-          width: 18px;
-          left: 3px;
-          bottom: 3px;
-          background-color: white;
-          transition: .4s;
-          border-radius: 50%;
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
       }
       input:checked + .switch-slider {
-          background-color: #FF4646;
+        background-color: #ff4646;
       }
       input:checked + .switch-slider:before {
-          transform: translateX(26px);
+        transform: translateX(26px);
       }
       .custom-radio {
-          display: inline-block;
-          position: relative;
-          padding-left: 28px;
-          cursor: pointer;
-          user-select: none;
+        display: inline-block;
+        position: relative;
+        padding-left: 28px;
+        cursor: pointer;
+        user-select: none;
       }
       .custom-radio input {
-          position: absolute;
-          opacity: 0;
-          cursor: pointer;
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
       }
       .radio-checkmark {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 20px;
-          width: 20px;
-          background-color: rgba(255, 255, 255, 0.1);
-          border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
       }
       .custom-radio:hover input ~ .radio-checkmark {
-          background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.2);
       }
       .custom-radio input:checked ~ .radio-checkmark {
-          background-color: #FF4646;
+        background-color: #ff4646;
       }
       .radio-checkmark:after {
-          content: "";
-          position: absolute;
-          display: none;
+        content: "";
+        position: absolute;
+        display: none;
       }
       .custom-radio input:checked ~ .radio-checkmark:after {
-          display: block;
+        display: block;
       }
       .custom-radio .radio-checkmark:after {
-          top: 6px;
-          left: 6px;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: white;
+        top: 6px;
+        left: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: white;
       }
     </style>
   </head>
@@ -281,20 +284,22 @@
             >Home</a
           >
           <a
-            href="#results"
+            href="result.html"
             class="nav-link text-white hover:text-primary transition-colors"
             >Results</a
           >
           <a
-            href="#history"
+            href="history.html"
             class="nav-link text-white hover:text-primary transition-colors"
             >History</a
           >
         </nav>
         <div class="flex items-center space-x-4">
-          <button class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 !rounded-button whitespace-nowrap transition-colors"
-            onclick="window.location.href = 'sign_up_page.html';">
-              <i class="ri-user-line mr-2"></i>Sign In
+          <button
+            class="bg-primary hover:bg-opacity-80 text-white px-4 py-2 !rounded-button whitespace-nowrap transition-colors"
+            onclick="window.location.href = 'sign_up_page.html';"
+          >
+            <i class="ri-user-line mr-2"></i>Sign In
           </button>
           <button
             class="md:hidden text-white w-10 h-10 flex items-center justify-center"
@@ -330,7 +335,9 @@
       <section id="home" class="tab-content active min-h-screen">
         <div class="relative overflow-hidden pt-16 pb-24">
           <div
-            style="background-image: url('https://readdy.ai/api/search-image?query=abstract%20dark%20background%20with%20red%20accents%2C%20modern%20digital%20interface%2C%20futuristic%20technology%20theme%2C%20minimal%20design%20with%20subtle%20patterns%2C%20suitable%20for%20a%20food%20scanning%20app%20background&width=1920&height=1080&seq=1&orientation=landscape');"
+            style="
+              background-image: url('https://readdy.ai/api/search-image?query=abstract%20dark%20background%20with%20red%20accents%2C%20modern%20digital%20interface%2C%20futuristic%20technology%20theme%2C%20minimal%20design%20with%20subtle%20patterns%2C%20suitable%20for%20a%20food%20scanning%20app%20background&width=1920&height=1080&seq=1&orientation=landscape');
+            "
             class="absolute inset-0 bg-cover bg-center opacity-30"
           ></div>
 
@@ -346,11 +353,13 @@
                 suitable for your dietary needs.
               </p>
               <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <button
-                  class="bg-primary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors pulse"
-                >
-                  <i class="ri-barcode-line mr-2"></i>Scan Now
-                </button>
+                <form action="/" method="POST" enctype="multipart/form-data">
+                  <button
+                    class="bg-primary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors pulse"
+                  >
+                    <i class="ri-barcode-line mr-2"></i>Scan Now
+                  </button>
+                </form>
                 <button
                   class="bg-secondary hover:bg-opacity-80 text-white px-6 py-3 !rounded-button whitespace-nowrap transition-colors"
                 >
@@ -417,18 +426,42 @@
 
               <div class="text-center text-gray-400 my-4">OR</div>
 
-              <div class="flex flex-col sm:flex-row gap-4">
-                <button
-                  class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center"
+              <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <form
+                  id="qr-form"
+                  class="upload-form flex justify-center gap-4 w-full sm:w-auto"
+                  action="/"
+                  method="POST"
+                  enctype="multipart/form-data"
                 >
-                  <i class="ri-camera-line mr-2"></i>Scan Barcode
-                </button>
-                <label
-                  class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer"
-                >
-                  <i class="ri-image-line mr-2"></i>Upload Barcode Image
-                  <input type="file" accept="image/*" id="barcode-upload" />
-                </label>
+                  <button
+                    type="button"
+                    class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center"
+                    onclick="document.getElementById('qr-input').click()"
+                  >
+                    <i class="ri-camera-line mr-2"></i>Scan Barcode
+                  </button>
+                  <label
+                    class="flex-1 bg-secondary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center cursor-pointer"
+                  >
+                    <i class="ri-image-line mr-2"></i
+                    ><span id="file-name">Upload Barcode Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      name="img_file"
+                      id="qr-input"
+                      class="hidden"
+                      required
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    class="flex-1 bg-primary hover:bg-opacity-80 text-white px-4 py-3 !rounded-button whitespace-nowrap transition-colors flex items-center justify-center"
+                  >
+                    <i class="ri-upload-line mr-2"></i>Submit
+                  </button>
+                </form>
               </div>
             </div>
           </div>
@@ -1200,7 +1233,7 @@
         // Comparison Chart
         if (document.getElementById("comparison-chart")) {
           const comparisonChart = echarts.init(
-            document.getElementById("comparison-chart"),
+            document.getElementById("comparison-chart")
           );
 
           const comparisonOption = {
@@ -1277,7 +1310,9 @@
       document.addEventListener("DOMContentLoaded", function () {
         // Trends Chart
         if (document.getElementById("trends-chart")) {
-          const trendsChart = echarts.init(document.getElementById("trends-chart"));
+          const trendsChart = echarts.init(
+            document.getElementById("trends-chart")
+          );
 
           const trendsOption = {
             animation: false,

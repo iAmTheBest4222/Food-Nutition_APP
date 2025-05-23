@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request
 import os
 from pyzbar.pyzbar import decode
@@ -17,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Route to display the upload form
 @app.route('/')
 def index():
-    return render_template('INDEX2.HTML')
+    return render_template('UI.html')
 
 # Route to handle file upload
 @app.route('/', methods=['POST','GET'])
@@ -32,7 +31,7 @@ def upload_img():
     if file.filename == '':
         return 'No selected file', 400
     
-    # Save the PDF file
+    # Save the file
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(file_path)
     
@@ -46,53 +45,44 @@ def upload_img():
             qr_data = qr_code.data.decode('utf-8')
             print(f"Decoded QR code data: {qr_data}")
             return qr_data
-        print("No QR code found in the image. 1")
+        print("No QR code found in the image.")
         return None
     
-    qr_data = scan_qr_code(file_path)
-    
     def get_product_info(gtin):
+        """Fetch and extract product information from API"""
         url = f"https://world.openfoodfacts.org/api/v0/product/{gtin}.json"
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
             if 'product' in data:
-                return data['product']
-            else:
-                print("Product not found in the database.")
-                return None
-        else:
-            print(f"Error fetching product information. Status code: {response.status_code}")
+                product_data = data['product']
+                return {
+                    'name': product_data.get('product_name', 'N/A'),
+                    'brand': product_data.get('brands', 'N/A'),
+                    'serving_size': product_data.get('serving_size', 'N/A'),
+                    'sugar_content': product_data.get('nutriments', {}).get('sugars_100g', 'N/A'),
+                    'nutrition': {
+                        'calories': product_data.get('nutriments', {}).get('energy-kcal_100g', 'N/A'),
+                        'fat': product_data.get('nutriments', {}).get('fat_100g', 'N/A'),
+                        'carbs': product_data.get('nutriments', {}).get('carbohydrates_100g', 'N/A'),
+                        'protein': product_data.get('nutriments', {}).get('proteins_100g', 'N/A')
+                    },
+                    'ingredients': product_data.get('ingredients_text', 'N/A'),
+                    'nutriscore': product_data.get('nutriscore_grade', 'N/A').upper(),
+                    'image_front_url': product_data.get('image_front_url', 'N/A')
+                }
+            print("Product not found in the database.")
             return None
-    def calculate_health_score(product_data):
-        # Base Score
-        score = 100
-        
-        # Deductions
-        # 1. Nutri-Score Penalty
-        nutri_score_penalty = {"a":0, "b":10, "c":20, "d":30, "e":40}
-        score -= nutri_score_penalty.get(product_data["nutriscore_grade"].lower(), 40)
-        
-        # 2. Nova Group Penalty
-        score -= product_data["nova_group"] * 10  # 40 points for group 4
-        
-        # 3. Sugar Content
-        if product_data["nutriments"]["sugars_value"] > 5:
-            score -= (product_data["nutriments"]["sugars_value"] -5) * 2
-        
-        # 4. Additives
-        score -= len(product_data["additives_tags"]) * 5
-        
-        # 5. Caffeine Content
-        if product_data["nutriments"].get("caffeine_value",0) > 50:
-            score -= 15
-            
-        # Bonuses
-        if "en:organic" in product_data["labels_tags"]:
-            score += 20
-            
-        return max(0, min(100, score))
+        print(f"Error fetching product information. Status code: {response.status_code}")
+        return None
+
+    def calculate_health_score(product_info):
+        """Calculate health score based on Nutri-Score"""
+        score_map = {'A': 90, 'B': 75, 'C': 60, 'D': 45, 'E': 30}
+        return score_map.get(product_info.get('nutriscore', 'E'), 30)
+
     def classifier(score):
+        """Classify product based on health score"""
         if score > 80:
             return "Safe for regular consumption"
         elif score > 60:
@@ -102,31 +92,47 @@ def upload_img():
         else:
             return "Not recommended for daily use"
 
+    # Process QR code and get product information
+    qr_data = scan_qr_code(file_path)
+    
+    # Initialize default values for all variables
+    a = "No QR code found."
+    b = ""
+    c = "Not available"
+    d = "Sugar content not available"
+    e_calories = "N/A"
+    e_fat = "N/A"
+    e_carbs = "N/A"
+    e_protein = "N/A"
+    f = ""
+    g = ""
+    h = ""
     
     if qr_data:
         product_info = get_product_info(qr_data)
         if product_info:
-            # Extract relevant information from the product data
-            classify=calculate_health_score(product_info)
-            c=classifier(classify)
-            # nut=extract_nutrition(product_info)
-            # print("Product Information:")
-            # print(nut)
-            ingredients = product_info.get('ingredients', 'N/A')
-            sugar_content = product_info.get('nutriments', {}).get('sugars_100g', 'N/A')
-            a = f"Estimated Sugar: {ingredients[1]['percent_estimate']}%"
-            b = f"Sugar Content: {sugar_content}g per 100g"
+            health_score = calculate_health_score(product_info)
+            a = product_info['name']
+            b = product_info['brand']
+            c = product_info['serving_size'] if product_info['serving_size'] != 'N/A' else 'Not available'
+            d = f"{product_info['sugar_content']}g per 100g" if product_info['sugar_content'] != 'N/A' else 'Sugar content not available'
+            # Split nutrition info into separate variables with proper formatting
+            e_calories = f"{float(product_info['nutrition']['calories']):.0f}kcal" if product_info['nutrition']['calories'] != 'N/A' else 'N/A'
+            e_fat = f"{float(product_info['nutrition']['fat']):.1f}g" if product_info['nutrition']['fat'] != 'N/A' else 'N/A'
+            e_carbs = f"{float(product_info['nutrition']['carbs']):.1f}g" if product_info['nutrition']['carbs'] != 'N/A' else 'N/A'
+            e_protein = f"{float(product_info['nutrition']['protein']):.1f}g" if product_info['nutrition']['protein'] != 'N/A' else 'N/A'
+            f = product_info['ingredients']
+            g = classifier(health_score)
+            h = product_info['image_front_url']
         else:
             print("Unable to retrieve product information.")
             a = "No product information available."
-            b = ""
-    else:
-        a = "No QR code found."
-        b = ""
-        c=""
-    
-    return render_template('INDEX2.HTML', a=a, b=b,c=c)
 
+    return render_template('result.html', 
+                           a=a, b=b, c=c, d=d, 
+                           e_calories=e_calories, e_fat=e_fat, 
+                           e_carbs=e_carbs, e_protein=e_protein,
+                           f=f, g=g, h=h)
 
 if __name__ == '__main__':
     app.run(debug=True)
