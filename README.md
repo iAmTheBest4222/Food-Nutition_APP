@@ -104,4 +104,40 @@ The following environment variables need to be set in your `.env` file:
 
 Never commit your actual `.env` file or sensitive credentials to version control!
 
+## Deployment to Render.com
+
+1. Create an account on [Render.com](https://render.com)
+
+2. Create a new Web Service:
+   - Connect your GitHub repository
+   - Choose Python environment
+   - Set the following:
+     - Build Command: `pip install -r requirements.txt`
+     - Start Command: `gunicorn main:app`
+
+3. Add Environment Variables in Render.com Dashboard:
+   - Go to your web service
+   - Click on "Environment"
+   - Add the following variables:
+     ```
+     SECRET_KEY=<your-generated-secret-key>
+     GOOGLE_CLIENT_ID=<your-google-client-id>
+     GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+     GITHUB_CLIENT_ID=<your-github-client-id>
+     GITHUB_CLIENT_SECRET=<your-github-client-secret>
+     PYTHON_VERSION=3.10.0
+     ```
+
+4. Update OAuth Redirect URIs:
+   - In Google Cloud Console, add:
+     ```
+     https://your-app-name.onrender.com/login/google/callback
+     ```
+   - In GitHub OAuth App settings, add:
+     ```
+     https://your-app-name.onrender.com/login/github/callback
+     ```
+
+Note: Replace `your-app-name` with your actual Render.com app name.
+
 

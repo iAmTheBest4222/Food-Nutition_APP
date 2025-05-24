@@ -23,12 +23,15 @@ else:
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Load environment variables
-from dotenv import load_dotenv
-load_dotenv()
+# Load environment variables - but don't fail if .env is missing
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass  # .env file might not exist in production
 
-# Session configuration
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-default-secret-key')
+# Required configuration with defaults for safety
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32))
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
