@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - GlucoseTracker</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#FF4646", secondary: "#2D2D2D" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+        min-height: 100vh;
+      }
+      .glass {
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .form-input {
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e0e0e0;
+        transition: all 0.3s ease;
+      }
+      .form-input:focus {
+        border-color: #ff4646;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255, 70, 70, 0.2);
+      }
+      .social-btn {
+        background-color: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+      }
+      .social-btn:hover {
+        background-color: #353535;
+      }
+      .divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      input[type="checkbox"] {
+        display: none;
+      }
+      .custom-checkbox {
+        width: 18px;
+        height: 18px;
+        background: #2d2d2d;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      input[type="checkbox"]:checked + .custom-checkbox {
+        background: #ff4646;
+        border-color: #ff4646;
+      }
+      input[type="checkbox"]:checked + .custom-checkbox::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 6px;
+        width: 5px;
+        height: 9px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .select-wrapper {
+        position: relative;
+      }
+      .select-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #9ca3af;
+        pointer-events: none;
+      }
+      .custom-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center p-4 md:p-6">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="font-['Pacifico'] text-4xl text-primary mb-2">logo</h1>
+        <p class="text-sm text-[#9CA3AF]">
+          Track your glucose levels with ease
+        </p>
+      </div>
+
+      <div class="glass rounded-xl p-6 md:p-8">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Create Account</h2>
+        <form id="signupForm" action="/signin" method="POST">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, message in messages %}
+          <div
+            class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-500/10 text-red-500{% else %}bg-green-500/10 text-green-500{% endif %}"
+          >
+            {{ message }}
+          </div>
+          {% endfor %} {% endif %} {% endwith %}
+
+          <div class="mb-5">
+            <label
+              for="name"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Full Name</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-user-line"></i>
+                </div>
+              </div>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-input w-full py-3 pl-10 pr-3 rounded-button"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label
+              for="email"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Email</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-mail-line"></i>
+                </div>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input w-full py-3 pl-10 pr-3 rounded-button"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label
+              for="password"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-lock-line"></i>
+                </div>
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input w-full py-3 pl-10 pr-10 rounded-button"
+                placeholder="Create a password"
+                required
+              />
+              <div class="absolute inset-y-0 right-3 flex items-center">
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-eye-off-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label
+              for="confirmPassword"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Confirm Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-lock-line"></i>
+                </div>
+              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                class="form-input w-full py-3 pl-10 pr-10 rounded-button"
+                placeholder="Confirm your password"
+                required
+              />
+              <div class="absolute inset-y-0 right-3 flex items-center">
+                <button
+                  type="button"
+                  id="toggleConfirmPassword"
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-eye-off-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="mb-5">
+            <label
+              for="phone"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Phone Number</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-phone-line"></i>
+                </div>
+              </div>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                class="form-input w-full py-3 pl-10 pr-3 rounded-button"
+                placeholder="Enter your phone number (optional)"
+              />
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label
+              for="birthDate"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Birth Date</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-calendar-line"></i>
+                </div>
+              </div>
+              <input
+                type="date"
+                id="dob"
+                name="dob"
+                class="form-input w-full py-3 pl-10 pr-3 rounded-button text-sm"
+                max="{{ '2025-05-23' }}"
+              />
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label
+              for="diabetesType"
+              class="block text-sm font-medium text-[#9CA3AF] mb-2"
+              >Diabetes Type</label
+            >
+            <div class="relative select-wrapper">
+              <div
+                class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+              >
+                <div
+                  class="w-5 h-5 flex items-center justify-center text-[#9CA3AF]"
+                >
+                  <i class="ri-heart-pulse-line"></i>
+                </div>
+              </div>
+              <select
+                id="diabetesType"
+                class="form-input custom-select w-full py-3 pl-10 pr-8 rounded-button text-sm"
+                required
+              >
+                <option value="" disabled selected>
+                  Select your diabetes type
+                </option>
+                <option value="type1">Type 1</option>
+                <option value="type2">Type 2</option>
+                <option value="gestational">Gestational</option>
+                <option value="prediabetes">Prediabetes</option>
+                <option value="none">None/Monitoring Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center mb-6">
+            <label class="flex items-center cursor-pointer">
+              <input type="checkbox" id="terms" class="hidden" required />
+              <span class="custom-checkbox mr-2"></span>
+              <span class="text-sm text-[#9CA3AF]"
+                >I agree to the <a href="#" class="text-primary">Terms</a> and
+                <a href="#" class="text-primary">Privacy Policy</a></span
+              >
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-primary hover:bg-[#e03c3c] text-white font-medium py-3 rounded-button transition-colors !rounded-button whitespace-nowrap"
+          >
+            Sign Up
+          </button>
+        </form>
+
+        <div class="my-6 flex items-center">
+          <div class="flex-1 divider"></div>
+          <span class="px-4 text-sm text-[#9CA3AF]">Or continue with</span>
+          <div class="flex-1 divider"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <a
+            href="{{ url_for('oauth_login', provider='google') }}"
+            class="social-btn flex items-center justify-center py-2.5 rounded-button whitespace-nowrap hover:bg-[#4285F4]/10"
+            title="Sign up with Google"
+          >
+            <div
+              class="w-5 h-5 flex items-center justify-center text-[#4285F4]"
+            >
+              <i class="ri-google-fill"></i>
+            </div>
+          </a>
+          <a
+            href="{{ url_for('oauth_login', provider='facebook') }}"
+            class="social-btn flex items-center justify-center py-2.5 rounded-button whitespace-nowrap hover:bg-[#1877F2]/10"
+            title="Sign up with Facebook"
+          >
+            <div
+              class="w-5 h-5 flex items-center justify-center text-[#1877F2]"
+            >
+              <i class="ri-facebook-fill"></i>
+            </div>
+          </a>
+          <a
+            href="{{ url_for('oauth_login', provider='github') }}"
+            class="social-btn flex items-center justify-center py-2.5 rounded-button whitespace-nowrap hover:bg-[#333]/10"
+            title="Sign up with GitHub"
+          >
+            <div class="w-5 h-5 flex items-center justify-center text-[#333]">
+              <i class="ri-github-fill"></i>
+            </div>
+          </a>
+        </div>
+
+        <p class="text-center text-sm text-[#9CA3AF]">
+          Already have an account?
+          <a
+            href="/login"
+            data-readdy="true"
+            class="text-primary hover:text-[#ff5e5e] font-medium transition-colors"
+          >
+            Log In
+          </a>
+        </p>
+      </div>
+
+      <p class="text-center text-xs text-[#9CA3AF] mt-6">
+        © 2025 GlucoseTracker. All rights reserved.
+      </p>
+    </div>
+
+    <script id="passwordToggleScript">
+      document.addEventListener("DOMContentLoaded", function () {
+        const togglePassword = document.getElementById("togglePassword");
+        const password = document.getElementById("password");
+
+        togglePassword.addEventListener("click", function () {
+          const type =
+            password.getAttribute("type") === "password" ? "text" : "password";
+          password.setAttribute("type", type);
+
+          // Toggle icon
+          const icon = togglePassword.querySelector("i");
+          if (type === "password") {
+            icon.classList.remove("ri-eye-line");
+            icon.classList.add("ri-eye-off-line");
+          } else {
+            icon.classList.remove("ri-eye-off-line");
+            icon.classList.add("ri-eye-line");
+          }
+        });
+      });
+    </script>
+
+    <script id="confirmPasswordToggleScript">
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleConfirmPassword = document.getElementById(
+          "toggleConfirmPassword"
+        );
+        const confirmPassword = document.getElementById("confirmPassword");
+
+        toggleConfirmPassword.addEventListener("click", function () {
+          const type =
+            confirmPassword.getAttribute("type") === "password"
+              ? "text"
+              : "password";
+          confirmPassword.setAttribute("type", type);
+
+          // Toggle icon
+          const icon = toggleConfirmPassword.querySelector("i");
+          if (type === "password") {
+            icon.classList.remove("ri-eye-line");
+            icon.classList.add("ri-eye-off-line");
+          } else {
+            icon.classList.remove("ri-eye-off-line");
+            icon.classList.add("ri-eye-line");
+          }
+        });
+      });
+    </script>
+    <script id="formSubmitScript">
+      document.addEventListener("DOMContentLoaded", function () {
+        const signupForm = document.getElementById("signupForm");
+
+        signupForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+          // Clear any existing error messages
+          const existingErrors = signupForm.querySelectorAll(".error-message");
+          existingErrors.forEach((error) => error.remove());
+
+          // Validate required fields
+          if (!name || !email || !password) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className =
+              "mb-4 p-4 rounded-lg bg-red-500/10 text-red-500 error-message";
+            errorDiv.textContent =
+              "Please fill in all required fields (Name, Email, and Password)";
+            signupForm.insertBefore(errorDiv, signupForm.firstChild);
+            return;
+          }
+
+          // Validate passwords match
+          if (password !== confirmPassword) {
+            const errorDiv = document.createElement("div");
+            errorDiv.className =
+              "mb-4 p-4 rounded-lg bg-red-500/10 text-red-500 error-message";
+            errorDiv.textContent = "Passwords do not match!";
+            signupForm.insertBefore(errorDiv, signupForm.firstChild);
+            return;
+          }
+
+          // All validation passed, submit the form
+          const button = signupForm.querySelector('button[type="submit"]');
+          button.disabled = true;
+          button.innerHTML =
+            '<span class="inline-block animate-spin mr-2"><i class="ri-loader-4-line"></i></span> Creating account...';
+          signupForm.submit();
+        });
+      });
+    </script>
+  </body>
+</html>
